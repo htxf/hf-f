@@ -100,34 +100,14 @@
 
 <script>
 import DayPlan from '../components/DayPlan'
+import { getPlansApi } from '../api/dayhabit'
 
 export default {
   name: 'DayHabit',
   components: { DayPlan },
   data() {
     return {
-      dayPlans: [
-        { timeZone: '上午',
-          plans: [
-            { planId: '1', finishFlag: false, content: '阅读', startTime: '07:08', stopTime: '08:08' },
-            { planId: '2', finishFlag: false, content: '阅读', startTime: '07:08', stopTime: '08:08' },
-            { planId: '3', finishFlag: false, content: '阅读', startTime: '07:08', stopTime: '08:08' }
-          ]
-        },
-        { timeZone: '下午',
-          plans: [
-            { planId: '4', finishFlag: false, content: '锻炼', startTime: '09:00', stopTime: '09:30' },
-            { planId: '5', finishFlag: false, content: '锻炼', startTime: '09:00', stopTime: '09:30' }
-          ]
-        },
-        { timeZone: '晚上',
-          plans: [
-            { planId: '6', finishFlag: false, content: '日语', startTime: '19:00', stopTime: '20:00' },
-            { planId: '7', finishFlag: false, content: '日语', startTime: '19:00', stopTime: '20:00' },
-            { planId: '8', finishFlag: false, content: '日语', startTime: '19:00', stopTime: '20:00' }
-          ]
-        }
-      ],
+      dayPlans: [],
       planForm: { planId: '', finishFlag: false, content: '', startTime: '', stopTime: '' },
       dialogVisible: false,
       rules: {
@@ -156,6 +136,11 @@ export default {
       const dayOfWeek = date.getDay()
       return year + '年' + month + '月' + day + '日' + ' - 周' + dayOfWeek
     }
+  },
+  async created() {
+    await getPlansApi().then(response => {
+      this.dayPlans = response.data
+    })
   },
   methods: {
     // 子组件传递来的的计划card点击事件
