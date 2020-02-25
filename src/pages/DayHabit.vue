@@ -92,7 +92,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmButtonClick">确 定</el-button>
+        <el-button type="primary" @click="dialogStatus === 'edit' ? editConfirmButtonClick(): insertConfirmButtonClick()">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -100,7 +100,7 @@
 
 <script>
 import DayPlan from '../components/DayPlan'
-import { getPlansApi } from '../api/dayhabit'
+import { getPlansApi, editPlanApi } from '../api/dayhabit'
 
 export default {
   name: 'DayHabit',
@@ -154,81 +154,81 @@ export default {
       this.planForm.startTime = editPlan.startTime
       this.planForm.stopTime = editPlan.stopTime
     },
-    confirmButtonClick() {
-      // 判断是新增还是编辑
-      if (this.dialogStatus === 'edit') {
-        console.log('ininedit')
-        this.$refs['form'].validate((valid) => {
-          if (valid) {
-            // 发送更新计划请求 TODO
-            // 改变页面对应计划内容；根据planId去dayPlans中修改对应的内容
-            const newEditPlan = {}
-            newEditPlan.planId = this.planForm.planId
-            newEditPlan.finishFlag = this.planForm.finishFlag
-            newEditPlan.content = this.planForm.content
-            newEditPlan.startTime = this.planForm.startTime
-            newEditPlan.stopTime = this.planForm.stopTime
-            for (let i = 0; i < this.dayPlans.length; i++) {
-              for (let j = 0; j < this.dayPlans[i].plans.length; j++) {
-                if (this.dayPlans[i].plans[j].planId === newEditPlan.planId) {
-                  this.dayPlans[i].plans[j] = newEditPlan
-                  // 还需要判断是否需要移动到其他区域
-                  const editPlanStartTime = parseInt(newEditPlan.startTime.split(':').join(''))
-                  if (i === 0 && !(parseInt('0530') <= editPlanStartTime && editPlanStartTime <= parseInt('1200'))) {
-                    console.log('00')
-                    this.movePlanToTimeZone(i, j, newEditPlan)
+    // 编辑时确定
+    editConfirmButtonClick() {
+      console.log('ininedit')
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          // 发送更新计划请求 TODO
+          const postData = {}
+          postData.planId = this.planForm.planId
+          postData.finishFlag = this.planForm.finishFlag
+          postData.content = this.planForm.content
+          postData.startTime = this.planForm.startTime
+          postData.stopTime = this.planForm.stopTime
+          editPlanApi(postData).then(response => {
+            if (response.data === 'success') {
+              // 改变页面对应计划内容；根据planId去dayPlans中修改对应的内容
+              for (let i = 0; i < this.dayPlans.length; i++) {
+                for (let j = 0; j < this.dayPlans[i].plans.length; j++) {
+                  if (this.dayPlans[i].plans[j].planId === postData.planId) {
+                    this.dayPlans[i].plans[j] = postData
+                    // 还需要判断是否需要移动到其他区域
+                    const editPlanStartTime = parseInt(postData.startTime.split(':').join(''))
+                    if (i === 0 && !(parseInt('0530') <= editPlanStartTime && editPlanStartTime <= parseInt('1200'))) {
+                      this.movePlanToTimeZone(i, j, postData)
+                    }
+                    if (i === 1 && !(parseInt('1200') <= editPlanStartTime && editPlanStartTime <= parseInt('1900'))) {
+                      this.movePlanToTimeZone(i, j, postData)
+                    }
+                    if (i === 2 && !(parseInt('1900') <= editPlanStartTime && editPlanStartTime <= parseInt('2330'))) {
+                      this.movePlanToTimeZone(i, j, postData)
+                    }
+                    break
                   }
-                  if (i === 1 && !(parseInt('1200') <= editPlanStartTime && editPlanStartTime <= parseInt('1900'))) {
-                    console.log('11')
-                    this.movePlanToTimeZone(i, j, newEditPlan)
-                  }
-                  if (i === 2 && !(parseInt('1900') <= editPlanStartTime && editPlanStartTime <= parseInt('2330'))) {
-                    console.log('22')
-                    this.movePlanToTimeZone(i, j, newEditPlan)
-                  }
-                  break
                 }
               }
+              // 排序
+              this.sortDayPlansByStartTime()
+              // 关闭编辑对话框
+              this.dialogVisible = false
+              this.$message({
+                type: 'success',
+                message: '编辑成功!'
+              })
             }
-            // 排序
-            this.sortDayPlansByStartTime()
-            // 关闭编辑对话框
-            this.dialogVisible = false
-            this.$message({
-              type: 'success',
-              message: '编辑成功!'
-            })
-          } else {
-            console.log('未通过校验')
-            return false
-          }
-        })
-      } else {
-        // todo 新增
-        this.$refs['form'].validate((valid) => {
-          if (valid) {
-            // 发送新增请求
-            // 页面新增
-            const addedPlan = {}
-            addedPlan.planId = this.planForm.planId
-            addedPlan.finishFlag = this.planForm.finishFlag
-            addedPlan.content = this.planForm.content
-            addedPlan.startTime = this.planForm.startTime
-            addedPlan.stopTime = this.planForm.stopTime
-            this.addPlanToTimeZone(addedPlan)
-            this.sortDayPlansByStartTime()
-            // 关闭新增对话框
-            this.dialogVisible = false
-            this.$message({
-              type: 'success',
-              message: '新增成功!'
-            })
-          } else {
-            console.log('未通过校验')
-            return false
-          }
-        })
-      }
+          })
+        } else {
+          console.log('未通过校验')
+          return false
+        }
+      })
+    },
+    // 新增时确定
+    insertConfirmButtonClick() {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          // 发送新增请求
+          // 页面新增
+          const addedPlan = {}
+          addedPlan.planId = this.planForm.planId
+          addedPlan.finishFlag = this.planForm.finishFlag
+          addedPlan.content = this.planForm.content
+          addedPlan.startTime = this.planForm.startTime
+          addedPlan.stopTime = this.planForm.stopTime
+          this.addPlanToTimeZone(addedPlan)
+          this.sortDayPlansByStartTime()
+          // 关闭新增对话框
+          this.dialogVisible = false
+          this.$message({
+            type: 'success',
+            message: '新增成功!'
+          })
+        } else {
+          console.log('未通过校验')
+          return false
+        }
+      })
     },
     // 把新增编辑框中的数据加到对应的time zone中
     addPlanToTimeZone(addedPlan) {

@@ -31,6 +31,33 @@ export default [
         data: dayPlans
       }
     }
+  },
+  {
+    url: '/plan/edit',
+    type: 'post',
+    response: config => {
+      // 在mock-server.js启用时如何调试？ console、alert、debugger等都不起作用
+      // mock-server 其实是运行在webpack-dev-server ？本质上算是Node的服务器？Node的JS环境
+      // 与浏览器的JS环境不同，没有window、alert、debugger之类的。但是又console方法？
+      // 有一些其他打印信息，可在mock-server.js中修改？
+      // 需要调试的话，应该找在webpack-dev-server下如何调试？
+      console.log(config)
+      const { planId, finishFlag, content, startTime, stopTime } = config.body
+      for (let i = 0; i < dayPlans.length; i++) {
+        for (let j = 0; j < dayPlans[i].plans.length; j++) {
+          if (dayPlans[i].plans[j].planId === planId) {
+            dayPlans[i].plans[j].finishFlag = finishFlag
+            dayPlans[i].plans[j].content = content
+            dayPlans[i].plans[j].startTime = startTime
+            dayPlans[i].plans[j].stopTime = stopTime
+          }
+        }
+      }
+      return {
+        statusCode: 200,
+        data: 'success'
+      }
+    }
   }
 
   // {
