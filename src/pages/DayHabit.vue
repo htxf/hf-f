@@ -100,7 +100,7 @@
 
 <script>
 import DayPlan from '../components/DayPlan'
-import { getPlansApi, editPlanApi } from '../api/dayhabit'
+import { getPlansApi, editPlanApi, insertPlanApi, deletePlansApi } from '../api/dayhabit'
 
 export default {
   name: 'DayHabit',
@@ -156,7 +156,6 @@ export default {
     },
     // 编辑时确定
     editConfirmButtonClick() {
-      console.log('ininedit')
       this.$refs['form'].validate((valid) => {
         if (valid) {
           // 发送更新计划请求 TODO
@@ -209,20 +208,25 @@ export default {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           // 发送新增请求
-          // 页面新增
-          const addedPlan = {}
-          addedPlan.planId = this.planForm.planId
-          addedPlan.finishFlag = this.planForm.finishFlag
-          addedPlan.content = this.planForm.content
-          addedPlan.startTime = this.planForm.startTime
-          addedPlan.stopTime = this.planForm.stopTime
-          this.addPlanToTimeZone(addedPlan)
-          this.sortDayPlansByStartTime()
-          // 关闭新增对话框
-          this.dialogVisible = false
-          this.$message({
-            type: 'success',
-            message: '新增成功!'
+          const postData = {}
+          // 后台给planId发号 or 随机数？
+          // postData.planId = this.planForm.planId
+          postData.finishFlag = this.planForm.finishFlag
+          postData.content = this.planForm.content
+          postData.startTime = this.planForm.startTime
+          postData.stopTime = this.planForm.stopTime
+          insertPlanApi(postData).then(response => {
+            // 新增成功时要返回plan的Id
+            postData.planId = response.data
+            // 页面新增
+            this.addPlanToTimeZone(postData)
+            this.sortDayPlansByStartTime()
+            // 关闭新增对话框
+            this.dialogVisible = false
+            this.$message({
+              type: 'success',
+              message: '新增成功!'
+            })
           })
         } else {
           console.log('未通过校验')
@@ -293,28 +297,33 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // 发起删除请求 todo
-        console.log(this.selectPlans)
-        // 页面上删除
-        for (let i = 0; i < this.selectPlans.length; i++) {
-          for (let j = 0; j < this.dayPlans.length; j++) {
-            for (let m = 0; m < this.dayPlans[j].plans.length; m++) {
-              if (this.selectPlans[i] === this.dayPlans[j].plans[m].planId) {
-                this.dayPlans[j].plans.splice(m, 1)
-                break
+        // 待删除的id用,分割拼接成string
+        const postData = {}
+        postData.planIds = this.selectPlans.join(',')
+        deletePlansApi(postData).then(response => {
+          if (response.data === 'success') {
+            // 页面上删除
+            for (let i = 0; i < this.selectPlans.length; i++) {
+              for (let j = 0; j < this.dayPlans.length; j++) {
+                for (let m = 0; m < this.dayPlans[j].plans.length; m++) {
+                  if (this.selectPlans[i] === this.dayPlans[j].plans[m].planId) {
+                    this.dayPlans[j].plans.splice(m, 1)
+                    break
+                  }
+                }
               }
             }
+            // 将子组件DayPlan中的选择框置为false
+            for (let i = 0; i < this.$refs.dayPlan.length; i++) {
+              this.$refs.dayPlan[i].selectFlag = false
+            }
+            // 将选择数组置空
+            this.selectPlans = []
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
           }
-        }
-        // 将子组件DayPlan中的选择框置为false
-        for (let i = 0; i < this.$refs.dayPlan.length; i++) {
-          this.$refs.dayPlan[i].selectFlag = false
-        }
-        // 将选择数组置空
-        this.selectPlans = []
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
         })
       }).catch(() => {
         this.$message({

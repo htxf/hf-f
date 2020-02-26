@@ -17,18 +17,18 @@ export function editPlanApi(data) {
   })
 }
 
-export function deletePlansApi(planIds) {
+export function deletePlansApi(data) {
   return request({
     url: '/plan/delete',
     method: 'post', // delete ??? TODO RESTful
-    data: planIds
+    data
   })
 }
 
-export function insertPlanApi(plan) {
+export function insertPlanApi(data) {
   return request({
     url: '/plan/insert',
     method: 'post',
-    data: plan
+    data
   })
 }

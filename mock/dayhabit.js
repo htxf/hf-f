@@ -1,3 +1,5 @@
+import Mock from 'mockjs'
+
 const dayPlans = [
   { timeZone: '上午',
     plans: [
@@ -58,61 +60,40 @@ export default [
         data: 'success'
       }
     }
+  },
+  {
+    url: '/plan/insert',
+    type: 'post',
+    response: config => {
+      const { finishFlag, content, startTime, stopTime } = config.body
+      // mock一个随机数orId值
+      const newPlanId = Mock.mock('@id')
+      const newData = {}
+      // 后台给planId发号 or 随机数？
+      newData.planId = newPlanId
+      newData.finishFlag = finishFlag
+      newData.content = content
+      newData.startTime = startTime
+      newData.stopTime = stopTime
+      // 后端其实就直接插入数据库了……
+      return {
+        statusCode: 200,
+        data: newPlanId
+      }
+    }
+  },
+  {
+    url: '/plan/delete',
+    type: 'post',
+    response: config => {
+      const { planIds } = config.body
+      const planIdArray = planIds.split(',')
+      console.log(planIdArray)
+      // 后端其实就直接deleteById删数据库
+      return {
+        statusCode: 200,
+        data: 'success'
+      }
+    }
   }
-
-  // {
-  //   url: '/vue-element-admin/article/detail',
-  //   type: 'get',
-  //   response: config => {
-  //     const { id } = config.query
-  //     for (const article of List) {
-  //       if (article.id === +id) {
-  //         return {
-  //           code: 20000,
-  //           data: article
-  //         }
-  //       }
-  //     }
-  //   }
-  // },
-
-  // {
-  //   url: '/vue-element-admin/article/pv',
-  //   type: 'get',
-  //   response: _ => {
-  //     return {
-  //       code: 20000,
-  //       data: {
-  //         pvData: [
-  //           { key: 'PC', pv: 1024 },
-  //           { key: 'mobile', pv: 1024 },
-  //           { key: 'ios', pv: 1024 },
-  //           { key: 'android', pv: 1024 }
-  //         ]
-  //       }
-  //     }
-  //   }
-  // },
-
-  // {
-  //   url: '/vue-element-admin/article/create',
-  //   type: 'post',
-  //   response: _ => {
-  //     return {
-  //       code: 20000,
-  //       data: 'success'
-  //     }
-  //   }
-  // },
-
-  // {
-  //   url: '/vue-element-admin/article/update',
-  //   type: 'post',
-  //   response: _ => {
-  //     return {
-  //       code: 20000,
-  //       data: 'success'
-  //     }
-  //   }
-  // }
 ]
