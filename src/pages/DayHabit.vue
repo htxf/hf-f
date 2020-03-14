@@ -138,7 +138,10 @@ export default {
     }
   },
   async created() {
-    await getPlansApi().then(response => {
+    // get请求 url参数
+    // TODO 用vuex存储用户信息
+    const userId = '1'
+    await getPlansApi(userId).then(response => {
       this.dayPlans = response.data
     })
   },
@@ -160,6 +163,8 @@ export default {
         if (valid) {
           // 发送更新计划请求 TODO
           const postData = {}
+          // TODO 需要获得用户id
+          postData.userId = '1'
           postData.planId = this.planForm.planId
           postData.finishFlag = this.planForm.finishFlag
           postData.content = this.planForm.content
@@ -211,6 +216,8 @@ export default {
           const postData = {}
           // 后台给planId发号 or 随机数？
           // postData.planId = this.planForm.planId
+          // TODO 需要获得当前用户id
+          postData.userId = '1'
           postData.finishFlag = this.planForm.finishFlag
           postData.content = this.planForm.content
           postData.startTime = this.planForm.startTime

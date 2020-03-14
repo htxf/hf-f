@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getPlansApi(userId) {
   return request({
-    url: '/plan/list',
+    url: '/dayPlans/query',
     method: 'get',
     params: { userId }
   })
@@ -11,7 +11,7 @@ export function getPlansApi(userId) {
 // method 写成了 methods 导致post未被识别，默认仍是get……
 export function editPlanApi(data) {
   return request({
-    url: '/plan/edit',
+    url: '/dayPlans/edit',
     method: 'post', // put ??? TODO RESTful
     data
   })
@@ -19,7 +19,7 @@ export function editPlanApi(data) {
 
 export function deletePlansApi(data) {
   return request({
-    url: '/plan/delete',
+    url: '/dayPlans/delete',
     method: 'post', // delete ??? TODO RESTful
     data
   })
@@ -27,7 +27,7 @@ export function deletePlansApi(data) {
 
 export function insertPlanApi(data) {
   return request({
-    url: '/plan/insert',
+    url: '/dayPlans/insert',
     method: 'post',
     data
   })

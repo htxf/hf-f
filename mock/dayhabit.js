@@ -24,7 +24,7 @@ const dayPlans = [
 ]
 export default [
   {
-    url: '/plan/list',
+    url: '/dayPlans/query',
     type: 'get',
     response: config => {
       // const { importance, type, title, page = 1, limit = 20, sort } = config.query
@@ -35,7 +35,7 @@ export default [
     }
   },
   {
-    url: '/plan/edit',
+    url: '/dayPlans/edit',
     type: 'post',
     response: config => {
       // 在mock-server.js启用时如何调试？ console、alert、debugger等都不起作用
@@ -62,7 +62,7 @@ export default [
     }
   },
   {
-    url: '/plan/insert',
+    url: '/dayPlans/insert',
     type: 'post',
     response: config => {
       const { finishFlag, content, startTime, stopTime } = config.body
@@ -83,7 +83,7 @@ export default [
     }
   },
   {
-    url: '/plan/delete',
+    url: '/dayPlans/delete',
     type: 'post',
     response: config => {
       const { planIds } = config.body
