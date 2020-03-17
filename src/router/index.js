@@ -10,14 +10,14 @@ Vue.use(Router)
  */
 export const constantRoutes = [
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/pages/Login')
+  },
+  {
     path: '/dayhabit',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/pages/DayHabit'),
-        name: 'DayHabit'
-      }
-    ]
+    name: 'DayHabit',
+    component: () => import('@/pages/DayHabit')
   }
 ]
 

@@ -1,17 +1,14 @@
 <template>
   <div id="app">
-    <DayHabit />
+    <router-view />
   </div>
 </template>
 
 <script>
-import DayHabit from './pages/DayHabit'
 
 export default {
   name: 'App',
-  components: {
-    DayHabit
-  }
+  components: {}
 }
 </script>
 
