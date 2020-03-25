@@ -15,6 +15,11 @@ export const constantRoutes = [
     component: () => import('@/pages/Login')
   },
   {
+    path: '/signup',
+    name: 'Sign',
+    component: () => import('@/pages/Sign')
+  },
+  {
     path: '/dayhabit',
     name: 'DayHabit',
     component: () => import('@/pages/DayHabit')

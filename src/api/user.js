@@ -8,10 +8,11 @@ export function loginApi(data) {
   })
 }
 
-export function signUpApi(data) {
+export function signApi(data) {
   return request({
     url: '/signup',
     method: 'post',
     data
   })
 }
+
