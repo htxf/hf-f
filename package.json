@@ -9,7 +9,7 @@
     "joint": "vue-cli-service serve --mode joint"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.4",
     "element-ui": "^2.4.5",
     "jshint": "^2.11.0",
